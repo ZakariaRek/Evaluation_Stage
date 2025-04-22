@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Embeddable
-public class Periode_Id {
+public class Appreciation_Id {
 
-    private int  Stagiare_Id;
-    private int  Stage_Id;
+    private int  Periode_Id;
+    private int  Tuteur_Id;
 
 
 }

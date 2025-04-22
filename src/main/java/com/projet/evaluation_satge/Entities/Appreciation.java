@@ -1,5 +1,8 @@
 package com.projet.evaluation_satge.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,25 +14,27 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Appreciation  {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id ;
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+public class Appreciation {
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EmbeddedId
+    private Appreciation_Id id;
 
     @ManyToOne
     @JoinColumn(name = "tuteur_id", insertable = false, updatable = false)
+    @JsonIdentityReference(alwaysAsId = true)
     private Tuteur tuteur;
 
+
     @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "stagiaire_id", insertable = false, updatable = false),
-            @JoinColumn(name = "stage_id", insertable = false, updatable = false)
-    })
+    @JoinColumn(name = "periode_id", insertable = false, updatable = false)
+//    @JsonIdentityReference(alwaysAsId = true)
     private Periode periode;
 
     @OneToMany(mappedBy = "appreciation")
     private List<Evaluation> evaluation;
 
     @OneToMany(mappedBy = "appreciation")
-    private List<Competences>  competences;
+    private List<Competences> competences;
 }
