@@ -1,5 +1,6 @@
 package com.projet.evaluation_satge.Entities;
 
+import com.projet.evaluation_satge.Entities.Enum.Competence_Type;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,8 +17,8 @@ public class Competences {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id ;
-
-    private String intitule;
+    @Enumerated(EnumType.STRING)
+    private Competence_Type intitule;
     private double note;
 
     @ManyToOne
