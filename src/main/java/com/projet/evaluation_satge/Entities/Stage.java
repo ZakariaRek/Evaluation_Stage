@@ -1,5 +1,8 @@
 package com.projet.evaluation_satge.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import jakarta.persistence.Id;
@@ -13,6 +16,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Stage {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,5 +32,6 @@ public class Stage {
     private String entreprise;
 
     @OneToMany(mappedBy = "stage")
+    @JsonIdentityReference(alwaysAsId = true)
     private List<Periode> periodes;
 }
