@@ -17,11 +17,14 @@ public class Appreciation  {
     private int id ;
 
     @ManyToOne
-    @JoinColumn(name = "stagiaire_id", insertable = false, updatable = false)
+    @JoinColumn(name = "tuteur_id", insertable = false, updatable = false)
     private Tuteur tuteur;
 
     @ManyToOne
-    @JoinColumn(name = "stage_id", insertable = false, updatable = false)
+    @JoinColumns({
+            @JoinColumn(name = "stagiaire_id", insertable = false, updatable = false),
+            @JoinColumn(name = "stage_id", insertable = false, updatable = false)
+    })
     private Periode periode;
 
     @OneToMany(mappedBy = "appreciation")

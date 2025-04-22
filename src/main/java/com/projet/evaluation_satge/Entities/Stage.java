@@ -16,7 +16,7 @@ import java.util.List;
 public class Stage {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private int id;
 
     @Column(nullable = false)
     private String description;
