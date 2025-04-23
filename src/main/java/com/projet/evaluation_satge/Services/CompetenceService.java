@@ -26,6 +26,10 @@ public class CompetenceService {
         return competenceRepository.save(competence);
     }
 
+    public List<Competences> saveAllCompetences(List<Competences> competence) {
+        return  competenceRepository.saveAll(competence);
+    }
+
     public void deleteCompetence(int id) {
         competenceRepository.deleteById(id);
     }

@@ -25,6 +25,9 @@ public class EvaluationService {
     public Evaluation saveEvaluation(Evaluation evaluation) {
         return evaluationRepository.save(evaluation);
     }
+    public List<Evaluation>  saveAllEvaluations(List<Evaluation> evaluation) {
+        return  evaluationRepository.saveAll(evaluation);
+    }
 
     public void deleteEvaluation(int id) {
         evaluationRepository.deleteById(id);

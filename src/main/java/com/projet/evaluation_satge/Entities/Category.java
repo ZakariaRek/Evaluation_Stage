@@ -22,7 +22,11 @@ public class Category {
     @Enumerated(EnumType.STRING)
     private Evaluation_Competence valeur;
 
+    @Column(name = "competence_id")
+    private int competenceId;
+
     @ManyToOne
     @JoinColumn(name = "competence_id", insertable = false, updatable = false)
     private Competences competences;
+
 }
