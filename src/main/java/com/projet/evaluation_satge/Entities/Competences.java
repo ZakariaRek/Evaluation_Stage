@@ -20,10 +20,21 @@ public class Competences {
     @Enumerated(EnumType.STRING)
     private Competence_Type intitule;
     private double note;
+//
+//    @Embedded
+//    @AttributeOverrides({
+//            @AttributeOverride(name = "periodeId", column = @Column(name = "appreciation_periode_id")),
+//            @AttributeOverride(name = "tuteurId", column = @Column(name = "appreciation_tuteur_id"))
+//    })
+//    private Appreciation_Id appreciationId;
 
     @ManyToOne
-    @JoinColumn(name = "appreciation_id", insertable = false, updatable = false)
+    @JoinColumns({
+            @JoinColumn(name = "appreciation_periode_id", referencedColumnName = "periode_id", insertable = false, updatable = false),
+            @JoinColumn(name = "appreciation_tuteur_id", referencedColumnName = "tuteur_id", insertable = false, updatable = false)
+    })
     private Appreciation appreciation;
+
 
     @OneToMany(mappedBy = "competences")
     private List<Category> categories;

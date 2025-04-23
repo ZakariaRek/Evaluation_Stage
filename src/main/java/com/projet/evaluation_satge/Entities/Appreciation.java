@@ -15,26 +15,32 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+
 public class Appreciation {
 //    @Id
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EmbeddedId
     private Appreciation_Id id;
 
+
+//    @Column(name = "tuteur_id")
+//    private int tuteur_Id;
+//    @Column(name = "periode_id")
+//    private int periode_Id;
+//
+
     @ManyToOne
     @JoinColumn(name = "tuteur_id", insertable = false, updatable = false)
     @JsonIdentityReference(alwaysAsId = true)
     private Tuteur tuteur;
 
-
     @ManyToOne
     @JoinColumn(name = "periode_id", insertable = false, updatable = false)
-//    @JsonIdentityReference(alwaysAsId = true)
     private Periode periode;
 
-    @OneToMany(mappedBy = "appreciation")
-    private List<Evaluation> evaluation;
+    @OneToMany(mappedBy = "appreciation", cascade = CascadeType.ALL)
+    private List<Evaluation> evaluations;
 
-    @OneToMany(mappedBy = "appreciation")
+    @OneToMany(mappedBy = "appreciation", cascade = CascadeType.ALL)
     private List<Competences> competences;
 }

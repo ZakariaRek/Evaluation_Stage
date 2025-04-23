@@ -25,7 +25,17 @@ public class Evaluation
     @Enumerated(EnumType.STRING)
     private Evaluation_Value valeur;
 
+//    @Embedded
+//    @AttributeOverrides({
+//            @AttributeOverride(name = "periodeId", column = @Column(name = "appreciation_periode_id")),
+//            @AttributeOverride(name = "tuteurId", column = @Column(name = "appreciation_tuteur_id"))
+//    })
+//    private Appreciation_Id appreciationId;
+
     @ManyToOne
-    @JoinColumn(name = "appreciation_id", insertable = false, updatable = false)
+    @JoinColumns({
+            @JoinColumn(name = "appreciation_periode_id", referencedColumnName = "periode_id", insertable = false, updatable = false),
+            @JoinColumn(name = "appreciation_tuteur_id", referencedColumnName = "tuteur_id", insertable = false, updatable = false)
+    })
     private Appreciation appreciation;
 }
