@@ -7,7 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -58,5 +60,22 @@ public class StagiaireController {
 
         stagiaireService.deleteStagiaire(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/check/{CIN}")
+    public ResponseEntity<?> checkCINExists(@PathVariable String CIN) {
+        Stagiaire exists = stagiaireService.existsStagiaireByCIN(CIN);
+        if (exists == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Return only the necessary fields
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", exists.getId());
+        response.put("cin", exists.getCin());
+        response.put("nom", exists.getNom());
+        response.put("prenom", exists.getPrenom());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

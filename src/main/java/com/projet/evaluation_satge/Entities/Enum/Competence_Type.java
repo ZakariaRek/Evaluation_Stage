@@ -3,8 +3,8 @@ package com.projet.evaluation_satge.Entities.Enum;
 public enum Competence_Type {
     COMPETENCE_INDIVIDUELLE("Compétences liées à l'individu"),
     COMPETENCE_ENTREPRISE("Compétences liées à l'entreprise"),
-    COMPETENCE_TECHNIQUE("Compétences scientifiques et techniques"),;
-
+    COMPETENCE_TECHNIQUE("Compétences scientifiques et techniques"),
+    COMPETENCE_SPECIFIQUE("Compétences spécifiques métier"),;
     private String description;
     Competence_Type(String description) {
         this.description = description;

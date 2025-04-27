@@ -29,4 +29,8 @@ public class StagiaireService {
     public void deleteStagiaire(int id) {
         stagiaireRepository.deleteById(id);
     }
+
+    public Stagiaire existsStagiaireByCIN(String cin) {
+        return stagiaireRepository.findByCin(cin);
+    }
 }

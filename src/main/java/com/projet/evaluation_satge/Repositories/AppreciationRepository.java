@@ -9,6 +9,15 @@ import java.util.List;
 
 @Repository
 public interface AppreciationRepository extends JpaRepository<Appreciation, Appreciation_Id> {
-    List<Appreciation> findByIdTuteurId(int tuteurId);
-    List<Appreciation> findByIdPeriodeId(int periodeId);
+    // Find by tuteur ID
+    List<Appreciation> findById_TuteurId(int tuteurId);
+
+    // Find by periode's stagiaire ID
+    List<Appreciation> findById_PeriodeStagiaireId(int stagiaireId);
+
+    // Find by periode's stage ID
+    List<Appreciation> findById_PeriodeStageId(int stageId);
+
+    // Find by both periode's stagiaire ID and stage ID
+    List<Appreciation> findById_PeriodeStagiaireIdAndId_PeriodeStageId(int stagiaireId, int stageId);
 }

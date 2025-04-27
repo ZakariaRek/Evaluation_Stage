@@ -29,4 +29,8 @@ public class TuteurService {
     public void deleteTuteur(int id) {
         tuteurRepository.deleteById(id);
     }
+    public Tuteur existsByCin(String cin) {
+
+        return tuteurRepository.findByCin(cin);
+    }
 }

@@ -17,15 +17,9 @@ import java.util.List;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Periode {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
 
-    @Column(name = "stagiaire_id")
-    private int stagiaireId;
-
-    @Column(name = "stage_id")
-    private int stageId;
+@EmbeddedId
+private Periode_Id id;
 
 
     private String date_debut;
@@ -43,4 +37,28 @@ public class Periode {
     @JoinColumn(name = "stage_id", insertable = false, updatable = false)
     @JsonIdentityReference(alwaysAsId = true)
     private Stage stage;
+
+    public int getStagiaireId() {
+        return id != null ? id.getStagiaireId() : 0;
+    }
+
+    // Convenience method to get stageId
+    public int getStageId() {
+        return id != null ? id.getStageId() : 0;
+    }
+
+    // Convenience methods for setting id components
+    public void setStagiaireId(int stagiaireId) {
+        if (id == null) {
+            id = new Periode_Id();
+        }
+        id.setStagiaireId(stagiaireId);
+    }
+
+    public void setStageId(int stageId) {
+        if (id == null) {
+            id = new Periode_Id();
+        }
+        id.setStageId(stageId);
+    }
 }

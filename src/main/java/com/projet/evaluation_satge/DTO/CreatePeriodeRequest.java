@@ -1,18 +1,17 @@
 package com.projet.evaluation_satge.DTO;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class AppreciationDTO {
+@NoArgsConstructor
+public  class CreatePeriodeRequest {
     private int stagiaireId;
     private int stageId;
-    private int tuteurId;
-    private List<EvaluationDTO> evaluations;
-    private List<CompetenceDTO> competences;
+    private String date_debut;
+    private String date_fin;
+
 }

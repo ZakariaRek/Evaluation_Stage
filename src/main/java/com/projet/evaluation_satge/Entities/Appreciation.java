@@ -15,19 +15,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-
 public class Appreciation {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EmbeddedId
     private Appreciation_Id id;
-
-
-//    @Column(name = "tuteur_id")
-//    private int tuteur_Id;
-//    @Column(name = "periode_id")
-//    private int periode_Id;
-//
 
     @ManyToOne
     @JoinColumn(name = "tuteur_id", insertable = false, updatable = false)
@@ -35,7 +25,11 @@ public class Appreciation {
     private Tuteur tuteur;
 
     @ManyToOne
-    @JoinColumn(name = "periode_id", insertable = false, updatable = false)
+    @JoinColumns({
+            @JoinColumn(name = "periode_stagiaire_id", referencedColumnName = "stagiaire_id", insertable = false, updatable = false),
+            @JoinColumn(name = "periode_stage_id", referencedColumnName = "stage_id", insertable = false, updatable = false)
+    })
+    @JsonIdentityReference(alwaysAsId = true)
     private Periode periode;
 
     @OneToMany(mappedBy = "appreciation", cascade = CascadeType.ALL)
