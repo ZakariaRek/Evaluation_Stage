@@ -21,7 +21,7 @@ public class Appreciation {
 
     @ManyToOne
     @JoinColumn(name = "tuteur_id", insertable = false, updatable = false)
-    @JsonIdentityReference(alwaysAsId = true)
+//    @JsonIdentityReference(alwaysAsId = true)
     private Tuteur tuteur;
 
     @ManyToOne

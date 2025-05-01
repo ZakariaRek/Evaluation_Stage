@@ -49,13 +49,20 @@ public class AppreciationController {
         return new ResponseEntity<>(appreciations, HttpStatus.OK);
     }
 
-    @GetMapping("/{periodeId}/{tuteurId}")
+    @GetMapping("/{periodeStagiaireId}/{periodeStageId}/{tuteurId}")
     public ResponseEntity<Appreciation> getAppreciationById(
-            @PathVariable int periodeId,
+            @PathVariable int periodeStagiaireId,
+            @PathVariable int periodeStageId,
             @PathVariable int tuteurId) {
-        // Implement method to get appreciation by ID
-        return null;
+
+        Appreciation_Id appreciationId = new Appreciation_Id(periodeStagiaireId, periodeStageId, tuteurId);
+        Optional<Appreciation> appreciation = appreciationService.getAppreciationById(appreciationId);
+
+        return appreciation
+                .map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
 
     @PostMapping
     public ResponseEntity<?> createAppreciation(@RequestBody AppreciationDTO appreciationDTO) {
