@@ -1,6 +1,9 @@
 package com.projet.evaluation_satge.Controllers;
 
+import com.projet.evaluation_satge.DTO.CreatePeriodeRequest;
+import com.projet.evaluation_satge.DTO.UpdatePeriodeRequest;
 import com.projet.evaluation_satge.Entities.Periode;
+import com.projet.evaluation_satge.Entities.Periode_Id;
 import com.projet.evaluation_satge.Services.PeriodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,10 +33,13 @@ public class PeriodeController {
     }
 
     /**
-     * Get period by ID
+     * Get period by stagiaire ID and stage ID
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<Periode> getPeriodeById(@PathVariable int id) {
+    @GetMapping("/{stagiaireId}/{stageId}")
+    public ResponseEntity<Periode> getPeriodeById(
+            @PathVariable int stagiaireId,
+            @PathVariable int stageId) {
+        Periode_Id id = new Periode_Id(stagiaireId, stageId);
         Optional<Periode> periode = periodeService.getPeriodeById(id);
         return periode.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -74,19 +80,24 @@ public class PeriodeController {
         try {
             // Create a new Periode object
             Periode periode = new Periode();
-            periode.setStagiaireId(request.getStagiaireId());
-            periode.setStageId(request.getStageId());
+            periode.setId(new Periode_Id(request.getStagiaireId(), request.getStageId()));
             periode.setDate_debut(request.getDate_debut());
             periode.setDate_fin(request.getDate_fin());
 
-            // Check for overlapping periods
-            List<Periode> existingPeriodes = periodeService.getPeriodesByStagiaireIdAndStageId(
+            // Check if the period already exists
+            Optional<Periode> existingPeriode = periodeService.getPeriodeByStagiaireIdAndStageId(
                     request.getStagiaireId(), request.getStageId());
-
-            if (periodeService.periodsOverlap(periode, existingPeriodes)) {
+            if (existingPeriode.isPresent()) {
                 Map<String, String> response = new HashMap<>();
-                response.put("error", "The new period overlaps with an existing period");
+                response.put("error", "A period for this stagiaire and stage already exists");
                 return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            }
+
+            // Validate dates
+            if (!periodeService.areDatesValid(request.getDate_debut(), request.getDate_fin())) {
+                Map<String, String> response = new HashMap<>();
+                response.put("error", "Invalid dates. End date cannot be before start date or dates are in invalid format");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
 
             // Save the periode
@@ -106,10 +117,16 @@ public class PeriodeController {
     /**
      * Update an existing period
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updatePeriode(@PathVariable int id, @RequestBody UpdatePeriodeRequest request) {
+    @PutMapping("/{stagiaireId}/{stageId}")
+    public ResponseEntity<?> updatePeriode(
+            @PathVariable int stagiaireId,
+            @PathVariable int stageId,
+            @RequestBody UpdatePeriodeRequest request) {
         try {
-            Optional<Periode> existingPeriodeOpt = periodeService.getPeriodeById(id);
+            // Check if the period exists
+            Optional<Periode> existingPeriodeOpt = periodeService.getPeriodeByStagiaireIdAndStageId(
+                    stagiaireId, stageId);
+
             if (existingPeriodeOpt.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
@@ -125,16 +142,11 @@ public class PeriodeController {
                 existingPeriode.setDate_fin(request.getDate_fin());
             }
 
-            // Check for overlapping periods (excluding the current period)
-            List<Periode> otherPeriodes = periodeService.getPeriodesByStagiaireIdAndStageId(
-                    existingPeriode.getStagiaireId(), existingPeriode.getStageId());
-
-            otherPeriodes.removeIf(p -> p.getId() == id);
-
-            if (periodeService.periodsOverlap(existingPeriode, otherPeriodes)) {
+            // Validate dates
+            if (!periodeService.areDatesValid(existingPeriode.getDate_debut(), existingPeriode.getDate_fin())) {
                 Map<String, String> response = new HashMap<>();
-                response.put("error", "The updated period would overlap with an existing period");
-                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+                response.put("error", "Invalid dates. End date cannot be before start date or dates are in invalid format");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
 
             // Save the updated periode
@@ -154,9 +166,14 @@ public class PeriodeController {
     /**
      * Delete a period
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePeriode(@PathVariable int id) {
+    @DeleteMapping("/{stagiaireId}/{stageId}")
+    public ResponseEntity<Void> deletePeriode(
+            @PathVariable int stagiaireId,
+            @PathVariable int stageId) {
+
+        Periode_Id id = new Periode_Id(stagiaireId, stageId);
         Optional<Periode> existingPeriode = periodeService.getPeriodeById(id);
+
         if (existingPeriode.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -165,69 +182,4 @@ public class PeriodeController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    /**
-     * Request class for periode creation
-     */
-    public static class CreatePeriodeRequest {
-        private int stagiaireId;
-        private int stageId;
-        private String date_debut;
-        private String date_fin;
-
-        public int getStagiaireId() {
-            return stagiaireId;
-        }
-
-        public void setStagiaireId(int stagiaireId) {
-            this.stagiaireId = stagiaireId;
-        }
-
-        public int getStageId() {
-            return stageId;
-        }
-
-        public void setStageId(int stageId) {
-            this.stageId = stageId;
-        }
-
-        public String getDate_debut() {
-            return date_debut;
-        }
-
-        public void setDate_debut(String date_debut) {
-            this.date_debut = date_debut;
-        }
-
-        public String getDate_fin() {
-            return date_fin;
-        }
-
-        public void setDate_fin(String date_fin) {
-            this.date_fin = date_fin;
-        }
-    }
-
-    /**
-     * Request class for periode update
-     */
-    public static class UpdatePeriodeRequest {
-        private String date_debut;
-        private String date_fin;
-
-        public String getDate_debut() {
-            return date_debut;
-        }
-
-        public void setDate_debut(String date_debut) {
-            this.date_debut = date_debut;
-        }
-
-        public String getDate_fin() {
-            return date_fin;
-        }
-
-        public void setDate_fin(String date_fin) {
-            this.date_fin = date_fin;
-        }
-    }
 }

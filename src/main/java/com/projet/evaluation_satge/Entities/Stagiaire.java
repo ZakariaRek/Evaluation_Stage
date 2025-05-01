@@ -3,6 +3,7 @@ package com.projet.evaluation_satge.Entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,7 +20,6 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 //@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-
 public class Stagiaire  extends Persone {
 
     @Column(nullable = false)
@@ -28,6 +28,6 @@ public class Stagiaire  extends Persone {
     private String institution;
     private String niveau;
     @OneToMany(mappedBy = "stagiaire")
-    @JsonIdentityReference(alwaysAsId = true)
+    @JsonIgnore
     private List<Periode> periodes;
 }

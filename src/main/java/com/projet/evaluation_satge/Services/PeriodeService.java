@@ -1,6 +1,7 @@
 package com.projet.evaluation_satge.Services;
 
 import com.projet.evaluation_satge.Entities.Periode;
+import com.projet.evaluation_satge.Entities.Periode_Id;
 import com.projet.evaluation_satge.Entities.Stage;
 import com.projet.evaluation_satge.Entities.Stagiaire;
 import com.projet.evaluation_satge.Repositories.PeriodeRepository;
@@ -37,7 +38,7 @@ public class PeriodeService {
     /**
      * Get period by ID
      */
-    public Optional<Periode> getPeriodeById(int id) {
+    public Optional<Periode> getPeriodeById(Periode_Id id) {
         return periodeRepository.findById(id);
     }
 
@@ -45,21 +46,24 @@ public class PeriodeService {
      * Get periods by stagiaire ID
      */
     public List<Periode> getPeriodesByStagiaireId(int stagiaireId) {
-        return periodeRepository.findByStagiaireId(stagiaireId);
+        // Updated to use the corrected repository method
+        return periodeRepository.findById_StagiaireId(stagiaireId);
     }
 
     /**
      * Get periods by stage ID
      */
     public List<Periode> getPeriodesByStageId(int stageId) {
-        return periodeRepository.findByStageId(stageId);
+        // Updated to use the corrected repository method
+        return periodeRepository.findById_StageId(stageId);
     }
 
     /**
      * Get periods by both stagiaire ID and stage ID
      */
-    public List<Periode> getPeriodesByStagiaireIdAndStageId(int stagiaireId, int stageId) {
-        return periodeRepository.findByStagiaireIdAndStageId(stagiaireId, stageId);
+    public Optional<Periode> getPeriodeByStagiaireIdAndStageId(int stagiaireId, int stageId) {
+        Periode_Id id = new Periode_Id(stagiaireId, stageId);
+        return periodeRepository.findById(id);
     }
 
     /**
@@ -70,9 +74,7 @@ public class PeriodeService {
         return periodeRepository.findActivePeriodsByStagiaireId(stagiaireId, currentDate);
     }
 
-    /**
-     * Save a period
-     */
+
     @Transactional
     public Periode savePeriode(Periode periode) {
         // Verify that the stagiaire exists
@@ -109,27 +111,19 @@ public class PeriodeService {
     /**
      * Delete a period
      */
-    public void deletePeriode(int id) {
+    public void deletePeriode(Periode_Id id) {
         periodeRepository.deleteById(id);
     }
 
-    /**
-     * Check if periods overlap
-     */
-    public boolean periodsOverlap(Periode newPeriode, List<Periode> existingPeriodes) {
-        LocalDate newStart = LocalDate.parse(newPeriode.getDate_debut());
-        LocalDate newEnd = LocalDate.parse(newPeriode.getDate_fin());
 
-        for (Periode existing : existingPeriodes) {
-            LocalDate existingStart = LocalDate.parse(existing.getDate_debut());
-            LocalDate existingEnd = LocalDate.parse(existing.getDate_fin());
+    public boolean areDatesValid(String newStartDate, String newEndDate) {
+        try {
+            LocalDate startDate = LocalDate.parse(newStartDate);
+            LocalDate endDate = LocalDate.parse(newEndDate);
 
-            // Check if periods overlap
-            if (!(newEnd.isBefore(existingStart) || newStart.isAfter(existingEnd))) {
-                return true;
-            }
+            return !endDate.isBefore(startDate);
+        } catch (Exception e) {
+            return false;
         }
-
-        return false;
     }
 }

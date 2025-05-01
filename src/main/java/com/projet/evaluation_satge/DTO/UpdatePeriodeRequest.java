@@ -8,12 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PeriodeDTO {
-
-    private  int stagiaireId;
-    private int  stageId;
-    private String   date_debut;
-    private String   date_fin;
-
-
+public  class UpdatePeriodeRequest {
+    private String date_debut;
+    private String date_fin;
 }
