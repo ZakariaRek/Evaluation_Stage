@@ -2,13 +2,13 @@ package com.projet.evaluation_satge.Controllers;
 
 import com.projet.evaluation_satge.DTO.AppreciationDTO;
 import com.projet.evaluation_satge.DTO.CategoryDTO;
-import com.projet.evaluation_satge.DTO.CompetenceDTO;
-import com.projet.evaluation_satge.DTO.EvaluationDTO;
+import com.projet.evaluation_satge.DTO.response.AppreciationDetailDTO;
 import com.projet.evaluation_satge.Entities.*;
 import com.projet.evaluation_satge.Entities.Enum.Competence_Type;
 import com.projet.evaluation_satge.Entities.Enum.Evaluation_Category;
 import com.projet.evaluation_satge.Entities.Enum.Evaluation_Competence;
 import com.projet.evaluation_satge.Entities.Enum.Evaluation_Value;
+import com.projet.evaluation_satge.Mappers.DTOMapper;
 import com.projet.evaluation_satge.Services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,10 +43,14 @@ public class AppreciationController {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private  DTOMapper dtoMapper;
+
     @GetMapping
-    public ResponseEntity<List<Appreciation>> getAllAppreciations() {
+    public ResponseEntity<List<AppreciationDetailDTO>> getAllAppreciations() {
         List<Appreciation> appreciations = appreciationService.getAllAppreciations();
-        return new ResponseEntity<>(appreciations, HttpStatus.OK);
+        List<AppreciationDetailDTO> detailDTOs = dtoMapper.toAppreciationDetailDTOList(appreciations);
+        return new ResponseEntity<>(detailDTOs, HttpStatus.OK);
     }
 
     @GetMapping("/{periodeStagiaireId}/{periodeStageId}/{tuteurId}")
@@ -197,6 +201,42 @@ public class AppreciationController {
         }
     }
 
+
+
+    @DeleteMapping("/{periodeStagiaireId}/{periodeStageId}/{tuteurId}")
+    public ResponseEntity<?> deleteAppreciation(
+            @PathVariable int periodeStagiaireId,
+            @PathVariable int periodeStageId,
+            @PathVariable int tuteurId) {
+        try {
+            // Create appreciation ID
+            Appreciation_Id appreciationId = new Appreciation_Id(periodeStagiaireId, periodeStageId, tuteurId);
+
+            // Check if appreciation exists
+            Optional<Appreciation> existingAppreciation = appreciationService.getAppreciationById(appreciationId);
+            if (existingAppreciation.isEmpty()) {
+                Map<String, String> response = new HashMap<>();
+                response.put("error", "Appreciation not found");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+
+            // Delete the appreciation
+            appreciationService.deleteAppreciation(appreciationId);
+
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Appreciation deleted successfully");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+
+        } catch (Exception e) {
+            System.err.println("Error deleting appreciation: " + e.getMessage());
+            e.printStackTrace();
+
+            Map<String, String> response = new HashMap<>();
+            response.put("error", "An error occurred while deleting the appreciation: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     protected void processCategoriesForCompetence(Competences competence, List<CategoryDTO> categoryDTOs) {
         System.out.println("Processing " + categoryDTOs.size() + " categories for competence ID: " + competence.getId());
@@ -235,12 +275,5 @@ public class AppreciationController {
         System.out.println("Successfully saved " + categories.size() + " out of " + categoryDTOs.size() + " categories");
     }
 
-    // Add a method in CategoryService to save a single category
-    // This assumes you have a method in CategoryService to save a single category
-    // If not, you should add it:
-    /*
-    public Category saveCategory(Category category) {
-        return categoryRepository.save(category);
-    }
-    */
+
 }
