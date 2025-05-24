@@ -44,9 +44,10 @@ public class Competences {
     @JsonBackReference("appreciation-competences")
     private Appreciation appreciation;
 
-    @OneToMany(mappedBy = "competences")
+    @OneToMany(mappedBy = "competences", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("competences-categories")
     private List<Category> categories;
+
 
     @Transient
     private Appreciation_Id appreciationId;
